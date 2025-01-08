@@ -82,6 +82,17 @@ impl EarlyLintPass for RedundantElse {
             }
         }
 
+        let mut app = Applicability::MachineApplicable;
+        if let ExprKind::Block(block, _) = &els.kind {
+            for stmt in &block.stmts {
+                // If the `else` block contains a local binding, Clippy shouldn't auto-fix it
+                if let StmtKind::Let(_) = &stmt.kind {
+                    app = Applicability::Unspecified;
+                    break;
+                }
+            }
+        }
+
         span_lint_and_sugg(
             cx,
             REDUNDANT_ELSE,
@@ -89,7 +100,7 @@ impl EarlyLintPass for RedundantElse {
             "redundant else block",
             "remove the `else` block and move the contents out",
             make_sugg(cx, els.span, "..", Some(expr.span)).to_string(),
-            Applicability::MachineApplicable,
+            app,
         );
     }
 }
