@@ -93,6 +93,7 @@ impl EarlyLintPass for RedundantElse {
             }
         }
 
+        // FIXME: The indentation of the suggestion would be the same as the one of the macro invocation in this implementation, see https://github.com/rust-lang/rust-clippy/pull/13936#issuecomment-2569548202
         span_lint_and_sugg(
             cx,
             REDUNDANT_ELSE,
