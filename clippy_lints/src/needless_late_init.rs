@@ -1,6 +1,7 @@
 use clippy_utils::diagnostics::span_lint_and_then;
 use clippy_utils::path_to_local;
-use clippy_utils::source::{SourceText, SpanRangeExt};
+use clippy_utils::source::{SourceText, SpanRangeExt, snippet};
+use clippy_utils::sugg::has_enclosing_paren;
 use clippy_utils::ty::needs_ordered_drop;
 use clippy_utils::visitors::{for_each_expr, for_each_expr_without_closures, is_local_used};
 use core::ops::ControlFlow;
@@ -271,6 +272,15 @@ fn check<'tcx>(
             msg_span.push_span_label(local_stmt.span, "created here");
             msg_span.push_span_label(assign.span, "initialised here");
 
+            let span_to_replace = if has_enclosing_paren(snippet(cx, usage.expr.span, "..")) {
+                assign
+                    .lhs_span
+                    .with_lo(usage.expr.span.lo())
+                    .with_hi(usage.expr.span.hi())
+            } else {
+                assign.span
+            };
+
             span_lint_and_then(
                 cx,
                 NEEDLESS_LATE_INIT,
@@ -281,7 +291,10 @@ fn check<'tcx>(
                         format!("move the declaration `{binding_name}` here"),
                         vec![
                             (local_stmt.span, String::new()),
-                            (assign.lhs_span, let_snippet.to_owned()),
+                            (
+                                span_to_replace,
+                                let_snippet.to_owned() + " = " + &snippet(cx, assign.rhs_span, ".."),
+                            ),
                         ],
                         Applicability::MachineApplicable,
                     );
