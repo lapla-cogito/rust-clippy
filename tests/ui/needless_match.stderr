@@ -78,6 +78,15 @@ error: this if-let expression is unnecessary
 LL |     let _ = if let Some(a) = Some(1) { Some(a) } else { None };
    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: replace it with: `Some(1)`
 
+error: return in condition
+  --> tests/ui/needless_match.rs:122:16
+   |
+LL |     let _ = if let Some(v) = f(1)? { Some(v) } else { f(2)? };
+   |                ^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `-D clippy::return-in-conditions` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(clippy::return_in_conditions)]`
+
 error: this if-let expression is unnecessary
   --> tests/ui/needless_match.rs:128:31
    |
@@ -151,5 +160,5 @@ LL | |             None
 LL | |         }
    | |_________^ help: replace it with: `A`
 
-error: aborting due to 14 previous errors
+error: aborting due to 15 previous errors
 

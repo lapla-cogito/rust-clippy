@@ -101,6 +101,15 @@ error: redundant pattern matching, consider using `is_some()`
 LL |         if let Some(_) = r#try!(result_opt()) {}
    |         -------^^^^^^^----------------------- help: try: `if r#try!(result_opt()).is_some()`
 
+error: return in condition
+  --> tests/ui/redundant_pattern_matching_result.rs:100:12
+   |
+LL |         if let Some(_) = r#try!(result_opt()) {}
+   |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `-D clippy::return-in-conditions` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(clippy::return_in_conditions)]`
+
 error: redundant pattern matching, consider using `is_some()`
   --> tests/ui/redundant_pattern_matching_result.rs:107:12
    |
@@ -209,5 +218,5 @@ error: redundant pattern matching, consider using `is_err()`
 LL |     let _ = matches!(x, Err(_));
    |             ^^^^^^^^^^^^^^^^^^^ help: try: `x.is_err()`
 
-error: aborting due to 28 previous errors
+error: aborting due to 29 previous errors
 
